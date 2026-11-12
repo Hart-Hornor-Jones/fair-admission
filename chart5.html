@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fair to whom? · chart 5 · Make it fair: same promise</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+ :root{--coral:#F84D58;--navy:#101D51;--yellow:#F9D640;--cream:#F5F3EB;--red:#A8212B;--mute:#5c6280}
+ *{box-sizing:border-box} body{margin:0;background:var(--cream);color:var(--navy);font:14px/1.5 Montserrat,"Segoe UI",Helvetica,Arial,sans-serif}
+ header{background:var(--coral);padding:22px 28px 18px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end}
+ header h1{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:64px;line-height:.92;color:var(--cream);margin:0;text-transform:uppercase;transform:scaleX(.82);transform-origin:left}
+ header .kicker{font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-size:13px;margin:0 0 8px}
+ header .tag{font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);font-size:12px;text-align:right;max-width:380px;line-height:1.6}
+ header .tag b{display:block;font-size:22px;letter-spacing:.06em}
+ main{padding:12px 28px 36px;max-width:1280px}
+ .intro{max-width:1120px;font-weight:500;margin:14px 0 12px}
+ button{font:700 11px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:4px;padding:5px 9px;cursor:pointer}
+ button.on{background:var(--navy);color:var(--yellow)}
+ .views{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 10px}
+ .views .sep{flex:1}
+ .rule{margin-top:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 28px;align-items:start;border-top:2px solid var(--navy);border-bottom:2px solid var(--navy);padding:10px 0 12px;margin-bottom:6px}
+ .ctl label{display:flex;justify-content:space-between;font-weight:800;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;gap:10px}
+ .ctl label span.v{font-variant-numeric:tabular-nums;font-weight:700;letter-spacing:0;text-transform:none;font-size:12.5px}
+ .ctl input[type=range]{width:100%;accent-color:var(--navy);margin:4px 0 0}
+ .ctl small{display:block;color:var(--mute);font-weight:500;font-size:11.5px;line-height:1.35;margin-top:2px}
+ canvas{display:block;width:100%;height:auto;background:transparent}
+ .badge{margin:14px .5% 0 5.2%;border:3px solid var(--navy);border-radius:8px;padding:12px 18px;display:grid;grid-template-columns:auto auto 1fr auto;gap:18px;align-items:center;background:transparent}
+ .badge.met{background:var(--yellow)}
+ .badge .st{font-family:Anton,Impact,sans-serif;font-size:34px;letter-spacing:.02em;text-transform:uppercase;line-height:1}
+ .badge .what{font-weight:600;font-size:13px} .badge .fc{display:flex;align-items:center}
+ .badge .what b{display:block;font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;margin-bottom:2px}
+ .badge .gap{text-align:right;font-weight:700;font-size:12px}
+ .badge .gap b{display:block;font-family:Anton,Impact,sans-serif;font-size:30px;font-weight:400;line-height:1}
+ button.linkish,button.linkish.on{border:0;background:none;padding:0;white-space:nowrap;flex:none;text-transform:none;letter-spacing:0;font:700 12.5px Montserrat,sans-serif;color:var(--navy);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+ .advtoggle{grid-column:1/-1;display:flex;gap:12px;align-items:center;border-top:1.5px solid #d9d6ca;padding-top:8px}
+ .advtoggle small{color:var(--mute);font-weight:500;font-size:11.5px}
+ .adv{grid-column:1/-1;display:none;grid-template-columns:1fr 1fr 1fr;gap:14px 28px}
+ .adv.show{display:grid}
+ .offs{grid-column:1/-1;display:none;grid-template-columns:repeat(4,1fr);gap:16px}
+ .offs.show{display:grid}
+ .offs .ctl label{text-transform:none;letter-spacing:0;font-size:12px}
+ .offs .ctl label i{display:inline-block;width:10px;height:10px;border-radius:50%;border:1.5px solid var(--navy);margin-right:6px;vertical-align:-1px}
+ .errs{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin:14px 0 0;padding:0 .5% 0 5.2%}
+ .err{border-top:3px solid var(--navy);padding-top:8px;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;align-items:start}
+ .err .big{font-family:Anton,Impact,sans-serif;font-size:44px;line-height:.95}
+ .err .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:800}
+ .err .d{font-size:12px;font-weight:600;color:var(--mute);margin-top:2px}
+ .err .gb{display:grid;gap:3px;margin-top:4px}
+ .err .gb .r{display:grid;grid-template-columns:14px 1fr 130px;gap:6px;align-items:center;font-size:11px;font-weight:700}
+ .err .gb .r i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--navy);display:inline-block}
+ .err .gb .r .b{height:9px;position:relative;background:#e9e6dc;border-radius:4px;overflow:hidden}
+ .err .gb .r .b b{position:absolute;left:0;top:0;bottom:0;background:var(--navy)}
+ .err.cls .gb .r .b b{background:var(--coral)}
+ .key{display:flex;gap:8px;flex-wrap:wrap;margin:4px .5% 0 5.2%;align-items:center}
+ .key button{display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-weight:700;font-size:12px;padding:4px 10px 4px 6px}
+ .key button i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--navy);display:inline-block}
+ .key button.off{opacity:.38} .key button.off i{background:#fff !important}
+ .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px .5% 0 5.2%}
+ .tile{background:transparent;border:1.5px solid var(--navy);border-radius:6px;padding:9px 11px}
+ .tile .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--mute)}
+ .tile .n{font-family:Anton,Impact,sans-serif;font-size:26px;line-height:1.05;margin-top:2px}
+ .tile .d{font-size:11.5px;font-weight:600;color:var(--mute)}
+ .bars{margin-top:6px;display:grid;gap:3px}
+ .bars .r{display:grid;grid-template-columns:16px 1fr 44px;gap:6px;align-items:center;font-size:11px;font-weight:700}
+ .bars .r i{width:10px;height:10px;border-radius:50%;border:1.5px solid var(--navy);display:inline-block}
+ .bars .r .b{height:9px;position:relative;background:#eee;border-radius:4px;overflow:hidden}
+ .bars .r .b b{position:absolute;left:0;top:0;bottom:0;background:var(--navy)}
+ .bars .r .b s{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--coral)}
+ .foot{font-size:12px;color:var(--mute);font-weight:500;margin-top:12px;max-width:1120px}
+ .foot details summary{cursor:pointer;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:11px;color:var(--navy)}
+ @media (max-width:900px){header h1{font-size:44px} .rule{grid-template-columns:1fr} .tiles{grid-template-columns:1fr 1fr}}
+
+ .rule{border-top:0;border-bottom:0;padding:14px 0 4px;margin-bottom:0}
+ .rule.r2{grid-template-columns:1fr 1fr} .rule.r3{grid-template-columns:1fr 1fr 1fr}
+ select{font:700 11px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--navy);border:2px solid var(--navy);border-radius:4px;background:#fff;padding:5px 8px;width:auto;max-width:100%;margin-top:6px;cursor:pointer;display:block}
+ .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0 12px}
+ .chips .chip{font:600 11.5px Montserrat,sans-serif;text-transform:none;letter-spacing:0;border:1.5px solid #b9b5a6;background:transparent;color:var(--navy);border-radius:14px;padding:3px 11px;cursor:pointer}
+ .chips .chip b{font-weight:800}
+ .chips .chip.on{border-color:var(--navy);background:var(--navy);color:var(--yellow)}
+ .chips.tchips{margin:10px .5% 0 5.2%}
+ .adv{display:none}
+ .float{display:none;position:absolute;right:24px;top:0;width:320px;background:#fff;border:2px solid var(--navy);border-radius:6px;padding:12px 30px 12px 14px;z-index:30;box-shadow:0 6px 18px rgba(16,29,81,.18)}
+ .float.show{display:block}
+ .float .x{position:absolute;top:2px;right:4px;border:0;background:none;font:700 18px Montserrat,sans-serif;padding:2px 6px;cursor:pointer;color:var(--navy)}
+ .float .ctl{margin:0} .float .tile{border:0;padding:0;background:none}
+ .offs{display:none;grid-template-columns:1fr;gap:8px;margin-top:10px}
+ .offs.show{display:grid}
+ body{position:relative}
+
+ .pin{border:0;background:none;padding:0 3px;font:700 13px Montserrat,sans-serif;line-height:1;cursor:pointer;color:#8a8fa8;margin-left:2px;flex:none}
+ .pin:hover{color:var(--navy)} .float .pin{color:var(--navy)}
+ .ph{display:inline-flex;align-items:center;font:600 11.5px Montserrat,sans-serif;border:1.5px dashed var(--navy);border-radius:14px;padding:3px 11px;cursor:pointer;color:var(--navy);background:transparent}
+ .ph b{font-weight:800;margin-right:4px}
+ .gsel{display:grid;gap:6px;margin-top:8px}
+ .gsel label{display:flex;align-items:center;gap:8px;font:700 12px Montserrat,sans-serif;text-transform:none;letter-spacing:0;cursor:pointer}
+ .gsel label i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--navy);display:inline-block}
+ .gsel label span{font-weight:500;color:var(--mute)}
+ .key{display:none}
+ .err{cursor:pointer} .err .mini{display:flex;gap:12px;margin-top:6px;font-size:12px;font-weight:700}
+ .err .mini i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--navy);display:inline-block;margin-right:4px;vertical-align:-1px}
+ .float .err{border-top:0;padding-top:0;cursor:default} .float .badge{margin:0;border:0;padding:0;background:none;grid-template-columns:1fr;cursor:default}
+ .badge.live{cursor:pointer}
+ .ctl{min-width:0} .ctl label{white-space:normal}
+ .float{width:360px} .float .err{grid-template-columns:auto 1fr} .float .err .gb .r{grid-template-columns:14px 1fr auto}
+
+ header{padding:26px 28px 22px;gap:24px;align-items:center;grid-template-columns:1fr auto auto}
+ header:not(:has(.tag)){grid-template-columns:1fr auto}
+ header h1{font-size:64px;line-height:.92}
+ header .kicker{font-size:13px;margin:0 0 8px}
+ header.met{background:var(--yellow)} header.met h1{color:var(--navy)} header.met .kicker{color:var(--red)} header.met .tag{color:var(--navy)}
+ .hface{border:0;background:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-self:end}
+ header .tag{margin-left:0}
+ .tiles,.chips.tchips,.key{margin-left:0;margin-right:0}
+ .errs{padding:0}
+ .badge{margin:14px 0 0;border-radius:0}
+ .float .badge{grid-template-columns:auto 1fr;gap:8px 14px;align-items:center}
+ .float .badge .st{font-size:30px} .float .badge .what{grid-column:1/-1} .float .badge .gap{grid-column:1/-1;text-align:left;display:flex;align-items:baseline;gap:8px}
+ .float .badge .gap b{display:inline;font-size:22px}
+
+ .hface svg{width:96px;height:96px}
+ .badge.live{display:block;padding:0;margin:14px 3% 0;height:42px;position:relative;border:1.5px solid var(--navy);background:transparent;cursor:pointer}
+ .ubar{position:absolute;inset:0;overflow:visible}
+ .ubar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--yellow);transition:width .3s}
+ .ubar .cur,.ubar .max{position:absolute;top:50%;transform:translateY(-50%);font-family:Anton,Impact,sans-serif;font-size:21px;white-space:nowrap;color:var(--navy)}
+ .ubar .cur{left:0;margin-left:8px} .ubar .cur.in{transform:translate(calc(-100% - 8px),-50%);margin-left:0}
+ .ubar .max{right:10px}
+ .ubar small{font:700 10.5px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-left:6px}
+ .float .gw{grid-template-columns:1fr;gap:10px}
+ .tile{border-radius:0}
+
+ .rule .ctl{display:flex;flex-direction:column}
+ .rule .ctl>small{order:1} .rule .ctl>input[type=range]{order:2;margin-top:auto} .rule .ctl>button,.rule .ctl>select,.rule .ctl>.offs{order:3}
+</style></head>
+<body>
+<header>
+ <div><p class="kicker">Fair to whom? · Chart 5 · an assignment</p><h1>Make it fair: same promise</h1></div>
+ <div class="tag"><b>Another standard</b>among the admitted, the same share succeeds in every group</div>
+ <button class="hface" id="hface" title="How fair is this class? Click for the details"></button>
+</header>
+<main>
+ <div class="intro">
+  <p>Here is a second standard of fairness, the one admissions offices and courts have usually been held to: <b>an offer of admission should mean the same thing whatever group the student belongs to.</b> If 90% of admitted students from one group go on to succeed, 90% from every other group should too. In the pictures, that means the right-hand error — admitted, did not succeed — should fall at the same rate in every group. The chart opens with the cuts left where chart 4 put them to equalize chances. Judged by this standard, that class is not fair. Your assignment is to make it so, with the same three levers. Then look back at the left-hand numbers.</p>
+ </div>
+ <div class="rule r3">
+  <div class="ctl"><label>Accuracy of the indicator <span class="v" id="v_pred"></span><button class="pin" title="Float this control">⤢</button></label><input type="range" id="pred" min="0.62" max="0.98" step="0.01" value="0.62"><small>Correlation between the indicator and first-year grades across the pool. The real value, built from UC's own studies, is 0.62; anything higher is a better indicator than exists.</small></div>
+  <div class="ctl"><label><span id="l_cut">Cut score</span> <span class="v" id="v_cut"></span><button class="pin" title="Float this control">⤢</button></label><input type="range" id="cut" min="25" max="75" step="0.5" value="52"><small id="s_cut">Admit applicants at or above this indicator value. You can also drag the line in the pool.</small></div>
+  <div class="ctl"><label>Separate cuts<button class="pin" title="Float this control">⤢</button></label><button id="grpBtn" class="on" style="margin-top:6px">Give each group its own cut</button><small>Each group's cut can sit above or below the common one. A point bonus for a group is the same thing as a lower cut for that group.</small><div class="offs show" id="offs"></div></div>
+ </div>
+ <div class="chips" id="chips"></div>
+ <div class="adv" id="adv">
+  <div class="ctl" data-chip="Groups shown"><label>Groups shown <span class="v" id="v_grp">all</span></label><div class="gsel" id="gsel"></div><small>Untick a group to take it out of the pool, the class and every number.</small></div>
+  <div class="ctl" data-chip="Softness of the cut"><label>Softness of the cut <span class="v" id="v_soft"></span></label><input type="range" id="soft" min="0" max="12" step="0.5" value="0"><small>At zero the cut is a wall. Softer cuts give applicants near the line a chance that fades with distance below it.</small></div>
+  <div class="ctl" data-chip="Success bar"><label>"Succeeds" means a first-year GPA of at least <span class="v" id="v_thr"></span></label><input type="range" id="thr" min="1.5" max="3.5" step="0.1" value="3"><small>The bar across the grades. You can also drag it in either plot.</small></div>
+  <div class="ctl" data-chip="Set the cut by"><label>Set the cut by</label><select id="mode"><option value="score">Indicator value</option><option value="share">Share of pool admitted</option></select><small>The same cut, read from either end: a value on the indicator, or the share of applicants who clear it.</small></div>
+  <div class="ctl" data-chip="View"><label>View</label><select id="view"><option value="joint">Joint distribution</option><option value="x">Distribution of the indicator</option><option value="y">Distribution of first-year grades</option></select><small>Tilt the picture to see either margin as a histogram. In the indicator view, the line over the pool is the chance of admission at each value, from 0 at the bottom to 100% at the top.</small></div>
+ </div>
+ <div class="float" id="float"><button class="x" id="floatX" title="close">×</button><div id="floatBody"></div></div>
+ <div class="badge" id="badgeFull" style="display:none"></div>
+ <div id="errPoolFull" style="display:none"></div><div id="errClsFull" style="display:none"></div>
+ <div class="errs"><div class="err" id="errPool"></div><div class="err" id="errCls"></div></div>
+ <canvas id="cv" width="1240" height="690"></canvas>
+ <div class="key" id="key"></div>
+ <div class="chips tchips" id="tiles"></div><div id="tilesFull" style="display:none"></div>
+ <div class="foot"><details><summary>How this works</summary>
+  <p>The pool is the one built in chart 1 from UC's published figures (see that chart's note). Admission depends on the indicator alone: with a sharp cut, everyone at or above the cut is admitted; with a softened cut, each applicant is admitted with a probability that is one-half at the cut and falls off below it (a logistic curve whose width is the sharpness setting, in indicator points). Each applicant carries a fixed lottery ticket, so softening the cut changes who is admitted smoothly rather than reshuffling everyone. The cut can be set either as an indicator value or as the share of the pool admitted; these are the same rule read from either end, since admitting the top share means drawing the cut where that share begins (with a softened cut, the share shown is the share at or above the cut, not the number admitted). The class plot shows the admitted students at exactly the indicator and grade values they had in the pool — the rule moves dots, it does not change them. Trend lines are fitted separately to the pool and to the class. "Succeeding" is clearing the chosen first-year GPA bar; the default of 2.5 is a C+ average, comfortably above UC's 2.0 good-standing line. The standard here is the one behind Cleary's (1968) regression model and, in the algorithmic-fairness literature, sufficiency or predictive parity: given the same decision, the outcome should not depend on group. A single common cut on a well-fitted indicator tends to satisfy it on its own, which is why chart 4's separate cuts break it. Groups with fewer than ten admitted students are left out of the gap. The predictiveness lever rescales the unexplained part of first-year grades so that the pool correlation takes the value shown; it changes grades, not the indicator. The two error rates are, in the language of the fairness literature, the false-negative rate among those who would succeed (left) and the share of admits who do not succeed, one minus the positive predictive value (right).</p>
+ </details></div>
+</main>
+
+<script>
+// ---------- the pool (identical to panel 1) ----------
+const GROUPS=[
+ {id:'asian',name:'Asian',share:.318,sat:[1221,178],gpa:[3.85,.40],resid:-.08,col:'#101D51'},
+ {id:'hisp',name:'Latino',share:.390,sat:[1022,167],gpa:[3.64,.45],resid:-.04,col:'#F84D58'},
+ {id:'white',name:'White',share:.226,sat:[1214,156],gpa:[3.88,.38],resid:+.09,col:'#F9D640'},
+ {id:'black',name:'African American',share:.066,sat:[1043,173],gpa:[3.55,.49],resid:0,col:'#A8212B'}];
+function darken(h){const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);const m=(v,n)=>Math.round(v*.55+n*.45);return `rgb(${m(r,16)},${m(g,29)},${m(b,81)})`}GROUPS.forEach(g=>g.dark=darken(g.col));
+const B1=.23*.56/.31, B2=.36*.56/155, NOISE0=.56*Math.sqrt(1-.25), RXY_WITHIN=.45;
+const XS={label:'HSGPA + SAT, COMBINED (standard score)',lo:9,hi:76,fmt:v=>v.toFixed(0)}, YS={label:'FIRST-YEAR COLLEGE GPA',lo:0.9,hi:4.1,fmt:v=>v.toFixed(2)};
+const N=100000;
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd=mulberry(11092026);function gauss(){const u=Math.max(rnd(),1e-9),v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+const pts=[];{for(let i=0;i<N;i++){const u=(i+.5)/N;let gi=0,c=0;for(let k=0;k<GROUPS.length;k++){c+=GROUPS[k].share;if(u<c){gi=k;break}}
+ const G=GROUPS[gi];const z1=gauss(),z2=gauss();
+ const gpa=Math.round(Math.min(4.4,Math.max(2.0,G.gpa[0]+G.gpa[1]*z1))*100)/100;
+ const sat=Math.round(Math.min(1600,Math.max(500,G.sat[0]+G.sat[1]*(RXY_WITHIN*z1+Math.sqrt(1-RXY_WITHIN**2)*z2)))/10)*10;
+ pts.push({g:gi,gpa,sat,e:gauss(),a:gauss(),jx:0,jy:0,fly:0,speed:1.1+.9*rnd(),lift:30+40*rnd()})}}
+for(let i=N-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[pts[i],pts[j]]=[pts[j],pts[i]]}
+{const lin=pts.map(p=>B1*p.gpa+B2*p.sat);const m=lin.reduce((s,v)=>s+v,0)/N;const sd=Math.sqrt(lin.reduce((s,v)=>s+(v-m)**2,0)/N);
+ pts.forEach((p,i)=>{p.lin=lin[i];p.x=Math.round((50+10*(lin[i]-m)/sd)*100)/100;p.read=.7*(lin[i]-m)/sd+.714*p.a;p.u=rnd()})}
+let A0=0;{const sorted=pts.map(p=>p.read).sort((a,b)=>a-b);const cut=sorted[Math.floor(.4*(N-1))];const sel=pts.filter(p=>p.read>=cut);A0=3.05-sel.reduce((s,p)=>s+p.lin+GROUPS[p.g].resid,0)/sel.length;for(let it=0;it<4;it++){const mu=sel.reduce((s,p)=>s+Math.max(.5,4-Math.log(1+Math.exp(4*(4-(A0+p.lin+GROUPS[p.g].resid+NOISE0*p.e))))/4),0)/sel.length;A0+=3.05-mu}}
+function outcomeOf(p,k){return Math.round(Math.max(.5,4-Math.log(1+Math.exp(4*(4-(A0+p.lin+GROUPS[p.g].resid+NOISE0*k*p.e))))/4)*100)/100}
+let _lastNoise=null;function realizeY(){if(_lastNoise===S.noise)return;_lastNoise=S.noise;for(const p of pts)p.y=outcomeOf(p,S.noise)}
+function poolR(k){let sx=0,sy=0,sxx=0,syy=0,sxy=0;const ys=pts.map(p=>outcomeOf(p,k));for(let i=0;i<N;i++){sx+=pts[i].x;sy+=ys[i]}const mx=sx/N,my=sy/N;for(let i=0;i<N;i++){sxx+=(pts[i].x-mx)**2;syy+=(ys[i]-my)**2;sxy+=(pts[i].x-mx)*(ys[i]-my)}return sxy/Math.sqrt(sxx*syy)}
+function noiseForR(t){let lo=0,hi=1.2;for(let i=0;i<40;i++){const m=(lo+hi)/2;if(poolR(m)>t)lo=m;else hi=m}return(lo+hi)/2}
+const R_REAL=poolR(1);
+
+
+// ---------- the rule ----------
+let DRAG=null;const S={cut:52,soft:0,mode:'score',thr:3,grp:true,off:[0,-6.5,0,-7],noise:1,r:.62,color:true,trend:false,vis:[true,true,true,true]};
+function gateFor(g){return S.cut+(S.grp?S.off[g]:0)}
+function pAdmit(p){const c=gateFor(p.g);if(S.soft<=0)return p.x>=c?1:0;return 1/(1+Math.exp(-(p.x-c)/(S.soft/2)))}
+function applyRule(){realizeY();for(const p of pts){p.adm=p.u<pAdmit(p);p.suc=p.y>=S.thr}}
+const XSORT=pts.map(p=>p.x).sort((a,b)=>a-b);
+function shareAbove(c){let k=0;for(const x of XSORT)if(x>=c)k++;return k/N}
+function cutForShare(s){const idx=Math.max(0,Math.min(N-1,Math.round((1-s)*(N-1))));return XSORT[idx]}
+function visible(p){return S.vis[p.g]}
+function statsOf(set){const v=set.filter(visible);const n=v.length;if(n<3)return null;let sx=0,sy=0;for(const p of v){sx+=p.x;sy+=p.y}const mx=sx/n,my=sy/n;let sxx=0,syy=0,sxy=0;for(const p of v){sxx+=(p.x-mx)**2;syy+=(p.y-my)**2;sxy+=(p.x-mx)*(p.y-my)}const slope=sxy/(sxx||1e-9);return{n,mx,my,r:sxy/Math.sqrt(sxx*syy||1e-9),slope,icept:my-slope*mx}}
+
+// ---------- geometry: two plates on one canvas ----------
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');const W=cv.width,H=cv.height;
+const SZ=578,DOT=1.15,K=26,DEG=Math.PI/180,baseY=650;
+let sig=0,tau=0,queue=[],last=performance.now();const RATE=95;
+const PL={pool:{ox:353,title:'APPLICANT POOL'},cls:{ox:945,title:'ADMITTED CLASS'}};
+function A(x){return((x-(XS.lo+XS.hi)/2)/(XS.hi-XS.lo))*SZ}function B(v){return((v-(YS.lo+YS.hi)/2)/(YS.hi-YS.lo))*SZ}
+function T(ox,a0,b0,G){const a1=G.k*(a0*G.c+b0*G.s),b1=G.k*(-a0*G.s+b0*G.c),h=b1+SZ/2;return{x:ox+a1,y:baseY-h*G.ct,a1,h}}
+function geom(){const c=Math.cos(sig*DEG),s=Math.sin(sig*DEG);return{c,s,k:1/(c+s),ct:Math.cos(tau*DEG),st:Math.sin(tau*DEG),pileByX:sig<45}}
+function mkStacks(members,getVal,depthKey,lo,hi,clsOf){const segs={};const w=(hi-lo)/K,per=new Array(K).fill(0),out=new Array(N).fill(null);
+ // counting sort on (bin, group, quantized value) so piles stay banded by group without a comparison sort
+ const Q=400,B=4*Q,keys=new Int32Array(members.length),cntk=new Int32Array(K*B+1);
+ for(let m=0;m<members.length;m++){const p=pts[members[m]];const v=getVal(p);const j=Math.min(K-1,Math.max(0,Math.floor((v-lo)/w)));let q=Math.floor((v-lo)/(hi-lo)*(Q-1));q=Math.max(0,Math.min(Q-1,q));if(depthKey(p)<0)q=Q-1-q;keys[m]=j*B+p.g*Q+clsOf(p)*134+Math.floor(q/3);cntk[keys[m]+1]++}
+ for(let k=1;k<cntk.length;k++)cntk[k]+=cntk[k-1];const order=new Int32Array(members.length);for(let m=0;m<members.length;m++)order[cntk[keys[m]]++]=members[m];
+ for(let m=0;m<order.length;m++){const i=order[m];const j=Math.floor(keys[0]*0+Math.min(K-1,Math.max(0,Math.floor((getVal(pts[i])-lo)/w))));const sk=j*12+pts[i].g*3+clsOf(pts[i]);if(!segs[sk])segs[sk]={center:lo+(j+.5)*w,g:pts[i].g,c:clsOf(pts[i]),start:per[j],n:0};segs[sk].n++;out[i]={center:lo+(j+.5)*w,stack:per[j]++}}
+ out.maxPer=Math.max(...per,1);out.segs=Object.values(segs);return out}
+let ST={pool:{},cls:{}},GAP=2*DOT+1.4;
+function rebuildStacks(){const all=[],adm=[];pts.forEach((p,i)=>{if(!visible(p))return;all.push(i);if(p.adm)adm.push(i)});
+ for(const[k,mem]of[['pool',all],['cls',adm]]){const cf=k==='pool'?(p=>(p.suc&&!p.adm)?0:(p.adm?2:1)):(p=>p.suc?1:0);ST[k].x=mkStacks(mem,p=>p.x,p=>1,XS.lo,XS.hi,cf);ST[k].v=mkStacks(mem,p=>p.y,p=>-1,YS.lo,YS.hi,cf)}
+ const mx=Math.max(ST.pool.x.maxPer,ST.pool.v.maxPer,1);GAP=Math.min(2*DOT+1.4,(SZ*.94)/mx)}// shared count scale: class piles are drawn on the pool's scale
+function screenPos(which,i,G){const st=G.pileByX?ST[which].x[i]:ST[which].v[i];if(!st)return null;const p=pts[i],ox=PL[which].ox;const hj=Math.min(XS.hi,Math.max(XS.lo,p.x+p.jx)),vj=Math.min(YS.hi,Math.max(YS.lo,p.y+p.jy));const a0=A(hj),b0=B(vj);const a1=G.k*(a0*G.c+b0*G.s),b1=G.k*(-a0*G.s+b0*G.c),h=b1+SZ/2;const aP=G.pileByX?A(st.center):B(st.center);return{X:ox+a1+(aP-a1)*G.st,Y:baseY-(h*G.ct+(st.stack+.5)*G.st*GAP),dep:Math.max(0,Math.min(1,(h*G.ct*G.st)/(SZ*.5)))}}
+function niceTicks(lo,hi,n){const span=hi-lo,raw=span/n,mag=Math.pow(10,Math.floor(Math.log10(raw)));let step=mag;for(const m of[1,2,2.5,5,10]){if(raw<=m*mag){step=m*mag;break}}const t=[];for(let v=Math.ceil(lo/step)*step;v<=hi+1e-9;v+=step)t.push(+v.toFixed(6));return t}
+function txt(s,x,y,o={}){ctx.save();ctx.font=(o.w||600)+' '+(o.sz||11)+'px Montserrat,sans-serif';ctx.fillStyle=o.c||'#101D51';ctx.globalAlpha=o.a==null?1:o.a;ctx.textAlign=o.al||'center';ctx.textBaseline=o.bl||'middle';if(o.rot){ctx.translate(x,y);ctx.rotate(o.rot);ctx.fillText(s,0,0)}else ctx.fillText(s,x,y);ctx.restore()}
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+
+function drawPlate(which,G,fit){const ox=PL[which].ox;
+ const C=[[-SZ/2,-SZ/2],[SZ/2,-SZ/2],[SZ/2,SZ/2],[-SZ/2,SZ/2]].map(([a,b])=>T(ox,a,b,G));
+ ctx.strokeStyle='#101D51';ctx.lineWidth=2.2;ctx.beginPath();C.forEach((c,i)=>i?ctx.lineTo(c.x,c.y):ctx.moveTo(c.x,c.y));ctx.closePath();ctx.stroke();
+ const xt=niceTicks(XS.lo,XS.hi,6),yt=niceTicks(YS.lo,YS.hi,6);ctx.strokeStyle='#e4e1d6';ctx.lineWidth=1;
+ for(const v of xt){const p0=T(ox,A(v),-SZ/2,G),p1=T(ox,A(v),SZ/2,G);ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke()}
+ for(const v of yt){const p0=T(ox,-SZ/2,B(v),G),p1=T(ox,SZ/2,B(v),G);ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke()}
+ const fade=h=>Math.max(0,1-Math.min(1,2*h/SZ)*G.st);const mot=Math.min(1,Math.max(sig/50,tau/50));
+ function edgeLabels(ticks,toPlate,fmt,mirror){const hE=toPlate((ticks[0]+ticks[ticks.length-1])/2,0).h;const al=fade(hE)*(mirror?mot:1);if(al<.04)return;for(const v of ticks){const p=toPlate(v,0),q=toPlate(v,1);let dx=p.x-q.x,dy=p.y-q.y;let L=Math.hypot(dx,dy);if(L<1e-6){dx=0;dy=1;L=1}dx/=L;dy/=L;txt(fmt(v),p.x+dx*14,p.y+dy*14,{a:al,sz:12})}}
+ edgeLabels(xt,(v,i)=>T(ox,A(v),-SZ/2+i*20,G),XS.fmt,false);edgeLabels(xt,(v,i)=>T(ox,A(v),SZ/2-i*20,G),XS.fmt,true);
+ edgeLabels(yt,(v,i)=>T(ox,-SZ/2+i*20,B(v),G),YS.fmt,which==='cls');edgeLabels(yt,(v,i)=>T(ox,SZ/2-i*20,B(v),G),YS.fmt,true);
+ function title(mid,inn,label,mirror){let dx=mid.x-inn.x,dy=mid.y-inn.y;let L=Math.hypot(dx,dy);if(L<1e-6){dx=0;dy=1;L=1}dx/=L;dy/=L;const al=fade(mid.h)*(mirror?mot:1);if(al<.04)return;const horiz=Math.abs(dx)<.5;txt(label,mid.x+dx*(horiz?36:44),mid.y+dy*(horiz?36:44),{a:al,sz:11.5,w:800,rot:horiz?0:(dx<0?-Math.PI/2:Math.PI/2)})}
+ title(T(ox,0,-SZ/2,G),T(ox,0,-SZ/2+20,G),XS.label,false);title(T(ox,0,SZ/2,G),T(ox,0,SZ/2-20,G),XS.label,true);title(T(ox,-SZ/2,0,G),T(ox,-SZ/2+20,0,G),YS.label,which==='cls');title(T(ox,SZ/2,0,G),T(ox,SZ/2-20,0,G),YS.label,true);
+ if(S.trend&&fit&&G.ct>.02){const seg=[[XS.lo,fit.icept+fit.slope*XS.lo],[XS.hi,fit.icept+fit.slope*XS.hi]].map(([x,y])=>T(ox,A(x),B(Math.max(YS.lo,Math.min(YS.hi,y))),G));ctx.save();ctx.globalAlpha=G.ct;ctx.strokeStyle='#101D51';ctx.lineWidth=3;ctx.setLineDash([8,5]);ctx.beginPath();ctx.moveTo(seg[0].x,seg[0].y);ctx.lineTo(seg[1].x,seg[1].y);ctx.stroke();ctx.restore()}
+ // the success bar and the mistake region
+ if(G.ct>.02&&sig<1){const yb=T(ox,0,B(S.thr),G).y;const L=T(ox,-SZ/2,0,G).x,R=T(ox,SZ/2,0,G).x,top=T(ox,0,SZ/2,G).y,bot=T(ox,0,-SZ/2,G).y;ctx.save();ctx.globalAlpha=G.ct;
+  ctx.fillStyle='#FFFDF8';if(which==='pool'){const gx=T(ox,A(S.cut),0,G).x;ctx.fillRect(L,top,Math.max(0,gx-L),Math.max(0,yb-top))}else{ctx.fillRect(L,yb,R-L,Math.max(0,bot-yb))}
+  ctx.setLineDash([7,5]);ctx.strokeStyle='#A8212B';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(L,yb);ctx.lineTo(R,yb);ctx.stroke();ctx.setLineDash([]);
+  if(DRAG==='bar'){ctx.fillStyle='#A8212B';ctx.fillRect(R-60,yb-9,60,18);txt(S.thr.toFixed(1),R-30,yb,{c:'#fff',sz:10.5,w:800})}ctx.restore()}
+ if(G.st>.02&&sig>45){const pileH=SZ*.98;const X=ox+B(S.thr);ctx.save();ctx.globalAlpha=G.st;
+  if(which==='cls'){ctx.fillStyle='#FFFDF8';ctx.fillRect(ox-SZ/2,baseY-pileH,Math.max(0,X-(ox-SZ/2)),pileH)}
+  ctx.setLineDash([7,5]);ctx.strokeStyle='#A8212B';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(X,baseY);ctx.lineTo(X,baseY-pileH);ctx.stroke();ctx.setLineDash([]);
+  ctx.restore()}
+ // plate title
+ txt(PL[which].title,ox,22,{sz:24,w:400});}
+function drawGate(G){const ox=PL.pool.ox;const gates=S.grp?GROUPS.map((g,i)=>[gateFor(i),g.col]):[[S.cut,'#101D51']];const pileH=SZ*.98;
+ if(G.ct>.02){for(const[c,col]of gates){const p0=T(ox,A(c),-SZ/2,G),p1=T(ox,A(c),SZ/2,G);ctx.save();ctx.globalAlpha=G.ct;ctx.strokeStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke();
+  if(S.soft>0&&G.st<.02&&sig<1){const w=S.soft;const q0=T(ox,A(c-w),-SZ/2,G),q1=T(ox,A(c+w),SZ/2,G);ctx.globalAlpha=.10;ctx.fillStyle=col;ctx.fillRect(q0.x,q1.y,q1.x-q0.x,q0.y-q1.y)}
+  ctx.restore()}
+  if(DRAG==='gate'&&sig<1&&tau<1&&!S.grp){const p1=T(ox,A(S.cut),SZ/2,G);ctx.fillStyle='#101D51';ctx.fillRect(p1.x-22,p1.y-22,44,16);txt(S.cut.toFixed(1),p1.x,p1.y-14,{c:'#F9D640',sz:10.5,w:800})}}
+ // indicator piles: the rule as a chance-of-admission curve over the pool (a step for a sharp cut, an S for a soft one)
+ if(G.st>.02&&sig<45){for(const[c,col]of gates){ctx.save();ctx.globalAlpha=G.st;ctx.strokeStyle=col;ctx.lineWidth=3;if(S.soft>0)ctx.setLineDash([6,4]);ctx.beginPath();
+   const nn=160;for(let k=0;k<=nn;k++){const x=XS.lo+(XS.hi-XS.lo)*k/nn;const pr=S.soft<=0?(x>=c?1:0):1/(1+Math.exp(-(x-c)/(S.soft/2)));const X=ox+A(x),Y=baseY-pr*pileH;if(k===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y)}
+   ctx.stroke();ctx.restore()}
+  }}
+
+function draw(){const G=geom();ctx.clearRect(0,0,W,H);
+ const fitP=S.trend?statsOf(pts):null,fitC=S.trend?statsOf(pts.filter(p=>p.adm)):null;
+ drawPlate('pool',G,fitP);drawPlate('cls',G,fitC);
+ // dots: pool copy (dimmed if rejected) + travelling copy
+ for(let i=0;i<N;i++){const p=pts[i];if(!visible(p))continue;const sp=screenPos('pool',i,G);if(!sp)continue;const col=S.color?GROUPS[p.g].col:'#101D51';
+  const miss=!p.adm&&p.suc;ctx.fillStyle=miss?(S.color?GROUPS[p.g].dark:'#000'):col;ctx.globalAlpha=p.adm?.08:(miss?.85:.3);const d=miss?DOT*1.4:DOT;const wd=d+G.st*(SZ/K*.36);ctx.fillRect(sp.X-wd,sp.Y-d,2*wd,2*d)}
+ for(let i=0;i<N;i++){const p=pts[i];if(!visible(p)||p.fly<=0.001)continue;const a=screenPos('pool',i,G);const b=screenPos('cls',i,G);if(!a||!b)continue;const t=ease(p.fly);const X=a.X+(b.X-a.X)*t,Y=a.Y+(b.Y-a.Y)*t-p.lift*Math.sin(Math.PI*t);const col=S.color?GROUPS[p.g].col:'#101D51';
+  const bad=p.adm&&!p.suc;ctx.fillStyle=bad?(S.color?GROUPS[p.g].dark:'#000'):col;ctx.globalAlpha=bad?.85:.3;const d=bad?DOT*1.4:DOT;const wd=d+G.st*(SZ/K*.36);ctx.fillRect(X-wd,Y-d,2*wd,2*d)}
+ if(G.st>.85){const f=(G.st-.85)/.15;const wd=DOT+G.st*(SZ/K*.36);for(const which of['pool','cls']){const st=G.pileByX?ST[which].x:ST[which].v;if(!st||!st.segs)continue;const ox=PL[which].ox;
+  for(const sg of st.segs){if(sg.c===1)continue;const X=ox+(G.pileByX?A(sg.center):B(sg.center));const y1=baseY-(sg.start+sg.n)*G.st*GAP,y0=baseY-sg.start*G.st*GAP;ctx.globalAlpha=sg.c===2?.8*f:f;ctx.fillStyle=sg.c===2?'#F5F3EB':(S.color?GROUPS[sg.g].dark:'#000');ctx.fillRect(X-wd,y1,2*wd,y0-y1)}}}
+ ctx.globalAlpha=1;drawGate(G);
+ if(G.st>.05){for(const which of['pool']){const rx=PL[which].ox-SZ/2-26;const top=SZ*.98;ctx.save();ctx.globalAlpha=G.st;ctx.strokeStyle='#101D51';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(rx,baseY);ctx.lineTo(rx,baseY-top);ctx.stroke();for(const cn of niceTicks(0,top/GAP,5)){if(cn*GAP>top)continue;ctx.beginPath();ctx.moveTo(rx-5,baseY-cn*GAP);ctx.lineTo(rx,baseY-cn*GAP);ctx.stroke();txt(String(cn),rx-9,baseY-cn*GAP,{al:'right',sz:11.5})}txt('STUDENTS',rx-4,baseY-top-12,{al:'left',sz:11,w:800});ctx.restore()}}
+ }
+function readouts(){tiles(statsOf(pts),statsOf(pts.filter(p=>p.adm)))}
+
+function face(gap,met){const g=Math.min(1,gap/.25);const k=1-2*g;const m=`M 21 ${42-6*k} Q 32 ${42+11*k} 43 ${42-6*k}`;const r=met?64:56;return `<svg viewBox="0 0 64 64" width="${r}" height="${r}" style="display:block;transition:width .35s,height .35s"><circle cx="32" cy="32" r="29" fill="${met?'#F9D640':'#F5F3EB'}" stroke="#101D51" stroke-width="3"/><circle cx="22" cy="25" r="3.3" fill="#101D51"/><circle cx="42" cy="25" r="3.3" fill="#101D51"/><path d="${m}" fill="none" stroke="#101D51" stroke-width="3.4" stroke-linecap="round"/></svg>`}
+function compactErr(T,k,rows){return `<div><div class="big">${T.pct}%</div></div><div><div class="k">${k}</div><div class="mini">${rows.map(o=>`<span><i style="background:${o.g.col}"></i>${o.den?Math.round(o.num/o.den*100):0}%</span>`).join('')}</div></div>`}
+function errors(){const all=pts.filter(visible);const rows=(f)=>GROUPS.map((g,i)=>{const a=all.filter(p=>p.g===i);return{g,...f(a)}});
+ const pool=rows(a=>{const suc=a.filter(p=>p.suc),miss=suc.filter(p=>!p.adm);return{num:miss.length,den:suc.length}});
+ const cls=rows(a=>{const adm=a.filter(p=>p.adm),bad=adm.filter(p=>!p.suc);return{num:bad.length,den:adm.length}});
+ const tot=r=>{const n=r.reduce((s,o)=>s+o.num,0),d=r.reduce((s,o)=>s+o.den,0);return{n,d,pct:d?Math.round(n/d*100):0}};
+ const gb=r=>`<div class="gb">${r.map(o=>`<div class="r"><i style="background:${o.g.col}"></i><div class="b"><b style="width:${o.den?o.num/o.den*100:0}%"></b></div><span>${o.den?Math.round(o.num/o.den*100):0}% · ${o.num.toLocaleString()} of ${o.den.toLocaleString()}</span></div>`).join('')}</div>`;
+ const P=tot(pool),C=tot(cls);
+ document.getElementById('errPoolFull').innerHTML=`<div><div class="big">${P.pct}%</div><div class="d">${P.n.toLocaleString()} of ${P.d.toLocaleString()}</div></div><div><div class="k">Would have succeeded, but were turned away</div><div class="d">share of all applicants who would have cleared the bar</div>${gb(pool)}</div>`;document.getElementById('errPool').innerHTML=compactErr(P,'Would have succeeded, but were turned away',pool);
+ document.getElementById('errClsFull').innerHTML=`<div><div class="big">${C.pct}%</div><div class="d">${C.n.toLocaleString()} of ${C.d.toLocaleString()}</div></div><div><div class="k">Admitted, but did not succeed</div><div class="d">share of the admitted class</div>${gb(cls)}</div>`;document.getElementById('errCls').innerHTML=compactErr(C,'Admitted, but did not succeed',cls);
+ document.getElementById('errCls').classList.add('cls');
+ const rates=cls.filter(o=>o.den>=200).map(o=>o.num/o.den);const gap=rates.length?Math.max(...rates)-Math.min(...rates):0;const met=gap<=.05;
+ const bd=document.getElementById('badgeFull');bd.className='badge'+(met?' met':'');document.querySelector('header').classList.toggle('met',met);{const h1=document.querySelector('header h1');if(!h1.dataset.rest)h1.dataset.rest=h1.textContent.split(': ')[1];h1.textContent=(met?"Now it's fair: ":'Make it fair: ')+h1.dataset.rest}document.getElementById('hface').innerHTML=face(gap,met);bd.innerHTML=`<div class="fc">${face(gap,met)}</div><div class="st">${met?'Fair':'Not yet'}</div><div class="what"><b>Same promise among the admitted</b></div><div class="gap"><b>${Math.round(gap*100)} pts</b>largest gap between groups</div>`}
+function tiles(fp,fc){tilesFull(fp,fc);tileChips()}
+function tilesFull(fp,fc){errors();const el=document.getElementById('tilesFull');const adm=pts.filter(p=>p.adm&&visible(p)),all=pts.filter(visible);if(!fp||!fc||adm.length<3){el.innerHTML=`<div class="tile"><div class="k">Class</div><div class="n">${adm.length}</div><div class="d">too few admitted to summarize</div></div>`;return}
+ const tile=(k,n,d,x)=>`<div class="tile"><div class="k">${k}</div><div class="n">${n}</div><div class="d">${d}</div>${x||''}</div>`;
+ const comp=GROUPS.map((g,i)=>{const a=all.filter(p=>p.g===i).length,c=adm.filter(p=>p.g===i).length;return{g,i,poolShare:a/all.length,clsShare:c/adm.length,rate:c/(a||1)}});
+ const bars=(f,mark)=>`<div class="bars">${comp.map(o=>`<div class="r"><i style="background:${o.g.col}"></i><div class="b"><b style="width:${f(o)*100}%"></b>${mark?`<s style="left:${mark(o)*100}%"></s>`:''}</div><span>${Math.round(f(o)*100)}%</span></div>`).join('')}</div>`;
+ el.innerHTML=tile('Class size',adm.length.toLocaleString(),`of ${all.length.toLocaleString()} applicants · ${Math.round(adm.length/all.length*100)}% admitted`)
+  +tile('Share of each group admitted','',' ',bars(o=>o.rate))
+  +tile('Who is in the class','',`bars: share of class · red tick: share of pool`,bars(o=>o.clsShare,o=>o.poolShare))
+  +tile('First-year GPA, pool → class',fp.my.toFixed(2)+' → '+fc.my.toFixed(2),`correlation with the indicator ${fp.r.toFixed(2)} → ${fc.r.toFixed(2)}`)}
+
+// ---------- animation ----------
+function tick(){const now=performance.now(),dt=Math.min(.05,(now-last)/1000);last=now;let busy=false;
+ if(queue.length){const[key,tgt]=queue[0];const cur=key==='sig'?sig:tau;const next=cur+Math.sign(tgt-cur)*Math.min(RATE*dt,Math.abs(tgt-cur));const done=Math.abs(next-tgt)<.01;if(key==='sig')sig=done?tgt:next;else tau=done?tgt:next;if(done)queue.shift();syncViews();busy=true}
+ for(const p of pts){const tgt=p.adm?1:0;if(Math.abs(p.fly-tgt)>.0005){p.fly+=(tgt-p.fly)*Math.min(1,p.speed*dt);if(Math.abs(p.fly-tgt)<.004)p.fly=tgt;busy=true}}
+ if(busy||needDraw){draw();needDraw=false}requestAnimationFrame(tick)}
+let needDraw=true;
+function syncViews(){const v=tau<1?'joint':sig<45?'x':'y';if(tau<1||tau>89)document.getElementById('view').value=v;syncChips()}
+function setView(v){queue=[];if(v==='joint'){queue.push(['tau',0]);if(sig>.5)queue.push(['sig',0])}else{const sT=v==='x'?0:90;if(Math.abs(sig-sT)>.5){if(tau>.5)queue.push(['tau',0]);queue.push(['sig',sT])}queue.push(['tau',90])}}
+document.getElementById('view').onchange=e=>setView(e.target.value);
+function refresh(){applyRule();rebuildStacks();readouts();const sh=Math.round(shareAbove(S.cut)*100);document.getElementById('v_cut').textContent=S.mode==='score'?S.cut.toFixed(1)+' · top '+sh+'%':sh+'% · cut '+S.cut.toFixed(1);document.getElementById('v_soft').textContent=S.soft<=0?'a wall':'±'+S.soft.toFixed(1)+' points';document.getElementById('v_thr').textContent=S.thr.toFixed(1);syncOffs();if(S.mode==='score')document.getElementById('cut').value=S.cut;else document.getElementById('cut').value=sh;syncChips();syncLive();needDraw=true}
+document.getElementById('cut').addEventListener('input',e=>{if(S.mode==='score')S.cut=+e.target.value;else S.cut=cutForShare(+e.target.value/100);refresh()});
+document.getElementById('soft').addEventListener('input',e=>{S.soft=+e.target.value;refresh()});
+document.getElementById('thr').addEventListener('input',e=>{S.thr=+e.target.value;refresh()});
+document.getElementById('pred').addEventListener('input',e=>{S.r=+e.target.value;S.noise=noiseForR(S.r);refresh()});
+document.getElementById('grpBtn').onclick=e=>{S.grp=!S.grp;e.target.classList.toggle('on',S.grp);document.getElementById('offs').classList.toggle('show',S.grp);refresh()};
+{const box=document.getElementById('offs');GROUPS.forEach((g,i)=>{const d=document.createElement('div');d.className='ctl';d.innerHTML=`<label><span><i style="background:${g.col}"></i>${g.name}</span><span class="v" id="v_off${i}"></span></label><input type="range" id="off${i}" min="-20" max="20" step="0.5" value="${S.off[i]}">`;box.appendChild(d);d.querySelector('input').addEventListener('input',e=>{S.off[i]=+e.target.value;refresh()})})}
+function syncOffs(){GROUPS.forEach((g,i)=>{document.getElementById('v_off'+i).textContent='cut '+gateFor(i).toFixed(1)+(S.off[i]?` (${S.off[i]>0?'+':''}${S.off[i]})`:'')});document.getElementById('v_pred').textContent=S.r.toFixed(2)+(Math.abs(S.r-R_REAL)<.005?' (the real value)':'')}
+function setMode(m){S.mode=m;document.getElementById('mode').value=m;const sl=document.getElementById('cut');
+ if(m==='score'){sl.min=25;sl.max=75;sl.step=.5;sl.value=S.cut;document.getElementById('l_cut').textContent='Cut score';document.getElementById('s_cut').textContent='Admit applicants at or above this indicator value. You can also drag the line in the pool.'}
+ else{sl.min=5;sl.max=95;sl.step=1;sl.value=Math.round(shareAbove(S.cut)*100);document.getElementById('l_cut').textContent='Share of pool admitted';document.getElementById('s_cut').textContent='Admit this share of applicants, taking the highest indicator values first. The cut moves to wherever that share begins.'}
+ refresh()}
+document.getElementById('mode').onchange=e=>setMode(e.target.value);
+// key
+{const box=document.getElementById('gsel');GROUPS.forEach((g,i)=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" checked><i style="background:${g.col}"></i>${g.name} <span>${Math.round(g.share*100)}%</span>`;l.querySelector('input').onchange=e=>{S.vis[i]=e.target.checked;const k=S.vis.filter(Boolean).length;document.getElementById('v_grp').textContent=k===GROUPS.length?'all':k===0?'none':GROUPS.filter((g,j)=>S.vis[j]).map(g=>g.name).join(', ');refresh()};box.appendChild(l)})}
+// drag the gate (pool plate) or the success bar (either plate), joint view only
+{let on=null;const pos=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}};
+ const toCut=x=>(XS.lo+XS.hi)/2+(x-PL.pool.ox)/SZ*(XS.hi-XS.lo);const toThr=y=>(YS.lo+YS.hi)/2+(baseY-SZ/2-y)/SZ*(YS.hi-YS.lo);
+ const near=e=>{if(tau>1||sig>1)return null;const{x,y}=pos(e);const inPlate=(ox)=>Math.abs(x-ox)<=SZ/2+6&&y>baseY-SZ-6&&y<baseY+6;
+  if(inPlate(PL.pool.ox)&&Math.abs(toCut(x)-S.cut)<3)return'gate';if((inPlate(PL.pool.ox)||inPlate(PL.cls.ox))&&Math.abs(toThr(y)-S.thr)<.12)return'bar';return null};
+ cv.addEventListener('pointerdown',e=>{on=near(e);DRAG=on;needDraw=true;if(on)cv.setPointerCapture(e.pointerId)});
+ cv.addEventListener('pointermove',e=>{if(!on){const n=near(e);cv.style.cursor=n==='gate'?'ew-resize':n==='bar'?'ns-resize':'default';return}const{x,y}=pos(e);
+  if(on==='gate')S.cut=Math.round(Math.max(25,Math.min(75,toCut(x)))*2)/2;else S.thr=Math.round(Math.max(1.5,Math.min(3.5,toThr(y)))*10)/10;document.getElementById('thr').value=S.thr;refresh()});
+ cv.addEventListener('pointerup',()=>{on=null;DRAG=null;needDraw=true});cv.addEventListener('pointercancel',()=>{on=null;DRAG=null;needDraw=true})}
+
+// ---------- chips: the non-central controls and the summaries, compact until clicked; the open one floats with the reader
+const advStore=document.getElementById('adv'),chipsEl=document.getElementById('chips'),fl=document.getElementById('float'),flB=document.getElementById('floatBody');
+let openCtl=null,openTile=null,SCR={y:0,vh:800};
+function chipText(c){const lab=c.querySelector('label');const v=lab?lab.querySelector(':scope > .v'):null,sel=c.querySelector(':scope > select');const name=c.dataset.chip||(lab?[...lab.childNodes].filter(n=>n.nodeType===3||(n.nodeType===1&&!['v','help','pin'].some(k=>n.classList.contains(k)))).map(n=>n.textContent).join('').trim():'');const val=v?v.textContent:sel?sel.options[sel.selectedIndex].text:'';return `<b>${name}</b>${val?' · '+val:''}`}
+function buildChips(){chipsEl.innerHTML='';[...advStore.querySelectorAll(':scope > .ctl')].forEach(c=>{const b=document.createElement('button');b.className='chip';b.innerHTML=chipText(c);b.onclick=()=>toggleCtl(c);c._chip=b;chipsEl.appendChild(b)})}
+function syncChips(){[...advStore.querySelectorAll(':scope > .ctl'),...(openCtl?[openCtl]:[])].forEach(c=>{if(c._chip)c._chip.innerHTML=chipText(c)})}
+function closeFloat(){if(openCtl){if(openCtl._ph){openCtl._ph.replaceWith(openCtl);openCtl._ph=null}else{advStore.appendChild(openCtl);openCtl._chip.classList.remove('on')}openCtl=null}if(typeof openLive!=='undefined'&&openLive){openLive=null}if(openTile!==null){const b=document.querySelector('#tiles .chip.on');if(b)b.classList.remove('on');openTile=null}flB.innerHTML='';fl.classList.remove('show')}
+function toggleCtl(c){if(openCtl===c){closeFloat();return}closeFloat();openCtl=c;flB.appendChild(c);c._chip.classList.add('on');fl.classList.add('show');placeFloat()}
+function tileChips(){const full=[...document.querySelectorAll('#tilesFull .tile')],box=document.getElementById('tiles');if(box.children.length!==full.length){box.innerHTML='';full.forEach((tl,i)=>{const b=document.createElement('button');b.className='chip';b.onclick=()=>toggleTile(i);box.appendChild(b)})}
+ full.forEach((tl,i)=>{const k=tl.querySelector('.k'),n=tl.querySelector('.n');const nt=n?n.textContent.trim():'';box.children[i].innerHTML=`<b>${k?k.textContent:''}</b>${nt?' · '+nt:''}`;box.children[i].classList.toggle('on',openTile===i)});
+ if(openTile!==null&&full[openTile])flB.innerHTML=full[openTile].outerHTML}
+function toggleTile(i){if(openTile===i){closeFloat();return}closeFloat();openTile=i;fl.classList.add('show');tileChips();placeFloat()}
+function placeFloat(){if(!fl.classList.contains('show'))return;if(window===window.parent){fl.style.position='fixed';fl.style.top='12px';return}fl.style.position='absolute';const docH=document.documentElement.scrollHeight;fl.style.top=Math.max(0,Math.min(docH-fl.offsetHeight-12,SCR.y+12))+'px'}
+window.addEventListener('message',e=>{if(e.data&&e.data.fairScroll){SCR={y:e.data.y,vh:e.data.vh};placeFloat()}});
+document.getElementById('floatX').onclick=closeFloat;
+buildChips();
+
+// ---------- pins: any lever can float too
+function floatCtl(c){if(openCtl===c){closeFloat();return}closeFloat();openCtl=c;if(!c._chip){const ph=document.createElement('button');ph.className='ph';ph.innerHTML=chipText(c)+' &nbsp;·&nbsp; floating';ph.onclick=closeFloat;c._ph=ph;c.parentNode.insertBefore(ph,c)}flB.appendChild(c);if(c._chip)c._chip.classList.add('on');fl.classList.add('show');placeFloat()}
+document.querySelectorAll('.pin').forEach(b=>{b.onclick=e=>{e.preventDefault();e.stopPropagation();floatCtl(b.closest('.ctl'))}});
+// ---------- live blocks (gauges, ledger): compact in place, full in the float when selected
+let openLive=null;const LIVE={errPool:'err',errCls:'err cls',badge:'badge'};
+function syncLive(){if(!openLive)return;const full=document.getElementById(openLive+'Full');if(!full)return;const extra=openLive==='badge'&&document.getElementById('badgeFull').classList.contains('met')?' met':'';flB.innerHTML=`<div class="${LIVE[openLive]}${extra}">${full.innerHTML}</div>`}
+function toggleLive(id){if(openLive===id){closeFloat();return}closeFloat();openLive=id;fl.classList.add('show');syncLive();placeFloat()}
+{const hf=document.getElementById('hface');if(hf)hf.onclick=()=>toggleLive('badge')}
+['errPool','errCls'].forEach(id=>{const el=document.getElementById(id);if(el){el.title='Click for the numbers and the group bars';el.onclick=()=>toggleLive(id)}});
+refresh();syncViews();requestAnimationFrame(tick);
+</script>
+</body></html>

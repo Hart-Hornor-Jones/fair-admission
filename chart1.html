@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fair to whom? · chart 1 · An imperfect predictor</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+ :root{--coral:#F84D58;--navy:#101D51;--yellow:#F9D640;--cream:#F5F3EB;--red:#A8212B;--mute:#5c6280}
+ *{box-sizing:border-box} body{margin:0;background:var(--cream);color:var(--navy);font:14px/1.5 Montserrat,"Segoe UI",Helvetica,Arial,sans-serif}
+ header{background:var(--coral);padding:22px 28px 18px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end}
+ header h1{font-family:Anton,Impact,sans-serif;font-weight:400;font-size:64px;line-height:.92;color:var(--cream);margin:0;text-transform:uppercase;transform:scaleX(.82);transform-origin:left}
+ header .kicker{font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--red);font-size:13px;margin:0 0 8px}
+ header .tag{font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red);font-size:12px;text-align:right;max-width:380px;line-height:1.6}
+ header .tag b{display:block;font-size:22px;letter-spacing:.06em}
+ main{padding:12px 28px 36px;max-width:1240px}
+ .intro{max-width:1100px;font-weight:500;margin:14px 0 12px}
+  .card{background:#fff;border:2px solid var(--navy);border-radius:6px;padding:12px 14px}
+ .card h3{margin:0 0 8px;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:800}
+ .card h3.sec{margin-top:14px;padding-top:10px;border-top:1.5px solid #d9d6ca}
+ .ctl{margin:8px 0}
+ .ctl label{display:flex;justify-content:space-between;font-weight:700;font-size:12.5px;gap:8px}
+ .ctl label span.v{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+ .ctl input[type=range]{width:100%;accent-color:var(--navy);margin:2px 0 0}
+ .ctl small{display:block;color:var(--mute);font-weight:500;font-size:11.5px;line-height:1.35}
+ select{font:600 12.5px Montserrat,sans-serif;color:var(--navy);border:2px solid var(--navy);border-radius:4px;background:#fff;padding:4px 6px;width:auto;max-width:100%}
+ button{font:700 11px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;border:2px solid var(--navy);background:#fff;color:var(--navy);border-radius:4px;padding:5px 9px;cursor:pointer}
+ button.on{background:var(--navy);color:var(--yellow)}
+ .btns{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0}
+ .views{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 8px}
+ canvas{display:block;width:100%;height:auto;background:transparent}
+ .row{display:grid;grid-template-columns:1fr 240px;gap:22px;align-items:center}
+ .views .sep{flex:1}
+ .views #views{display:flex;gap:6px;flex-wrap:wrap}
+ .key{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+ .key button{display:flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-weight:700;font-size:12px;padding:4px 10px 4px 6px}
+ .key button i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--navy);display:inline-block}
+ .key button.off{opacity:.38}
+ .key button.off i{background:#fff !important}
+ .tiles{display:grid;grid-template-columns:1fr;gap:12px}
+ @media (max-width:760px){.row{grid-template-columns:1fr}}
+ .tile{background:transparent;border:1.5px solid var(--navy);border-radius:6px;padding:9px 11px}
+ .tile .k{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--mute)}
+ .tile .n{font-family:Anton,Impact,sans-serif;font-size:28px;line-height:1.05;margin-top:2px}
+ .tile .d{font-size:11.5px;font-weight:600;color:var(--mute)}
+ .foot{font-size:12px;color:var(--mute);font-weight:500;margin-top:12px;max-width:1100px}
+ .foot details summary{cursor:pointer;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:11px;color:var(--navy)}
+ .foot table{border-collapse:collapse;margin:6px 0;font-size:11.5px}
+ .foot td,.foot th{border:1px solid #d9d6ca;padding:2px 8px;text-align:right} .foot th:first-child,.foot td:first-child{text-align:left}
+ @media (max-width:900px){.layout{grid-template-columns:1fr} header h1{font-size:44px}}
+
+ header{padding:26px 28px 22px;gap:24px;align-items:center;grid-template-columns:1fr auto auto}
+ header:not(:has(.tag)){grid-template-columns:1fr auto}
+ header h1{font-size:64px;line-height:.92}
+ header .kicker{font-size:13px;margin:0 0 8px}
+ header.met{background:var(--yellow)} header.met h1{color:var(--navy)} header.met .kicker{color:var(--red)} header.met .tag{color:var(--navy)}
+ .hface{border:0;background:none;cursor:pointer;padding:0;display:flex;align-items:center;justify-self:end}
+ header .tag{margin-left:0}
+ .tiles,.chips.tchips,.key{margin-left:0;margin-right:0}
+ .errs{padding:0}
+ .badge{margin:14px 0 0;border-radius:0}
+ .float .badge{grid-template-columns:auto 1fr;gap:8px 14px;align-items:center}
+ .float .badge .st{font-size:30px} .float .badge .what{grid-column:1/-1} .float .badge .gap{grid-column:1/-1;text-align:left;display:flex;align-items:baseline;gap:8px}
+ .float .badge .gap b{display:inline;font-size:22px}
+
+ .hface svg{width:96px;height:96px}
+ .badge.live{display:block;padding:0;margin:14px 3% 0;height:42px;position:relative;border:1.5px solid var(--navy);background:transparent;cursor:pointer}
+ .ubar{position:absolute;inset:0;overflow:visible}
+ .ubar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--yellow);transition:width .3s}
+ .ubar .cur,.ubar .max{position:absolute;top:50%;transform:translateY(-50%);font-family:Anton,Impact,sans-serif;font-size:21px;white-space:nowrap;color:var(--navy)}
+ .ubar .cur{left:0;margin-left:8px} .ubar .cur.in{transform:translate(calc(-100% - 8px),-50%);margin-left:0}
+ .ubar .max{right:10px}
+ .ubar small{font:700 10.5px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-left:6px}
+ .float .gw{grid-template-columns:1fr;gap:10px}
+ .tile{border-radius:0}
+</style></head>
+<body>
+<header>
+ <div><p class="kicker">Fair to whom? · Chart 1 · simulated applicants</p><h1>An imperfect predictor</h1></div>
+ <div class="tag"><b>Grades, scores, outcomes</b>how loosely an admissions indicator tracks what happens later</div>
+</header>
+<main>
+ <div class="intro">
+  <p>Admissions offices rank applicants on indicators they can see in the fall of senior year: high school grades, a test score, or some blend. What they are trying to predict happens later. Here is a simulated pool of 100,000 applicants to a university like UC. Each dot is one student. Across: the indicator admissions offices have found most informative, high school GPA and SAT combined. Up: the grades that student would earn in the first year of college if admitted. The pool is built from what UC has published about its own applicants and students: the spread of grades and scores in each group, and how first-year grades follow from them.</p>
+ </div>
+ <div>
+   <div class="views"><span id="views"><button data-v="joint" class="on">Joint distribution</button><button data-v="x">Distribution of the indicator</button><button data-v="y">Distribution of first-year grades</button></span><span class="sep"></span><button id="colorBtn" class="on">Color by group</button><button id="trendBtn">Trend line</button></div>
+   <div class="row"><div><canvas id="cv" width="660" height="620"></canvas>
+   <div class="key" id="key"></div></div>
+   <div class="tiles" id="tiles"></div></div>
+ </div>
+ <div class="foot">
+  <details><summary>How the pool was simulated, and what UC reported</summary>
+   <p><b>Applicants.</b> Four groups in the shares implied by the STTF report's Table 3C-2 for fall 2018 UC applicants (Latino 39%, Asian 32%, White 23%, African American 7%, after dropping other and unknown). Within each group, weighted-capped high school GPA and SAT (reading + math) are drawn from normal distributions with the means and standard deviations printed on the STTF report's Figures 3C-4 and 3C-10 (Appendix V, Table 1), fall 2018 applicants:</p>
+   <table><tr><th>Group</th><th>HSGPA</th><th>SAT</th><th>Residual vs. common line</th></tr>
+   <tr><td>Asian</td><td>3.85 ± 0.40</td><td>1221 ± 178</td><td>−0.08</td></tr><tr><td>Latino</td><td>3.64 ± 0.45</td><td>1022 ± 167</td><td>−0.04</td></tr><tr><td>White</td><td>3.88 ± 0.38</td><td>1214 ± 156</td><td>+0.09</td></tr><tr><td>African American</td><td>3.55 ± 0.49</td><td>1043 ± 173</td><td>0.00</td></tr></table>
+   <p>HSGPA is capped at 4.4 and SAT at 1600. Within each group HSGPA and SAT correlate 0.45, which gives a pooled correlation near the 0.53 (R² = 28%) the STTF reports among applicants.</p>
+   <p><b>First-year grades.</b> Each student's first-year UC GPA is built from the regression UC's Institutional Research office fit to the 2015 entering cohort (IRAP 2020, Appendix C): standardized coefficients 0.23 on HSGPA and 0.36 on SAT, 25% of variance explained. Those are converted to raw units with enrollee standard deviations of 0.31 (HSGPA), 155 (SAT) and 0.56 (first-year GPA, backed out of the 2003–06 UCOP regression tables), so one HSGPA point is worth about 0.42 grade points and 100 SAT points about 0.13. Each group then gets the small offset from the common line that Geiser & Studley (2001, Table 8) measured for the HSGPA + SAT I model (last column above), plus normal noise with SD 0.485. The intercept is set so that the 60% of applicants admitted on a holistic reading have a mean first-year GPA of 3.05; grades are capped at 4.0. Nothing is fit to the outcome correlations directly — they are what the model produces:</p>
+   <table><tr><th>Indicator</th><th>r, all applicants (model)</th><th>R², top 60% (model)</th><th>R² UC reported, enrollees</th></tr>
+   <tr><td>HSGPA only</td><td id="t_gpa_r"></td><td id="t_gpa_r2"></td><td>0.16 (STTF 2010–12)</td></tr><tr><td>SAT only</td><td id="t_sat_r"></td><td id="t_sat_r2"></td><td>0.21 (STTF 2010–12)</td></tr><tr><td>HSGPA + SAT</td><td id="t_comp_r"></td><td id="t_comp_r2"></td><td>0.26 (STTF 2010–12); 0.25 (IRAP 2015)</td></tr></table>
+   <p>The "top 60%" column keeps the 60% of applicants highest on a holistic reading that correlates 0.7 with the combined indicator, standing in for everything else in a file: UC can only observe the students it enrolls, and a relationship measured in that narrowed pool reads weaker than in the applicant pool, so this is the column to compare with UC's reported figures. The combined indicator is the regression's own weighting of HSGPA and SAT, shown as a standard score with mean 50 and SD 10 over the pool. Nothing here is UC student-level data.</p>
+  </details>
+ </div>
+</main>
+
+<script>
+// ---------- simulation (sourced parameters; see footnote) ----------
+// Applicant pool, fall 2018 (STTF 2020, Fig. 3C-4 and 3C-10, Appendix V Table 1): mean ± SD of SAT (RW+M) and weighted HSGPA by group.
+// Shares from STTF Table 3C-2 (low-income/first-gen cross-tabulation), four groups renormalized to 100%.
+// Group residuals (actual minus predicted first-year GPA, HSGPA+SAT model): Geiser & Studley 2001, Table 8, sign reversed.
+const GROUPS=[
+ {id:'asian',name:'Asian',share:.318,sat:[1221,178],gpa:[3.85,.40],resid:-.08,col:'#101D51'},
+ {id:'hisp',name:'Latino',share:.390,sat:[1022,167],gpa:[3.64,.45],resid:-.04,col:'#F84D58'},
+ {id:'white',name:'White',share:.226,sat:[1214,156],gpa:[3.88,.38],resid:+.09,col:'#F9D640'},
+ {id:'black',name:'African American',share:.066,sat:[1043,173],gpa:[3.55,.49],resid:0,col:'#A8212B'}];
+// Outcome model, first-year UC GPA = a + B1*HSGPA + B2*SAT + group residual + noise.
+// Standardized coefficients .23 (HSGPA) and .36 (SAT), R^2 .25, among 2015 enrollees (IRAP 2020 App. C);
+// converted to raw units with enrollee SDs HSGPA .31, SAT 155, first-year GPA .56 (SD backed out of the 2003 UCOP tables).
+const B1=.23*.56/.31, B2=.36*.56/155, NOISE0=.56*Math.sqrt(1-.25), RXY_WITHIN=.45;  // within-group HSGPA–SAT correlation (pooled R^2 is .28 per STTF)
+const PRED={
+ comp:{label:'HSGPA + SAT, COMBINED (standard score)',obs:.26,src:'STTF 2010–12 (IRAP 2015: 25%)',lo:9,hi:76,dec:0,fmt:v=>v.toFixed(0),val:p=>p.comp},
+ sat:{label:'SAT, READING + MATH',obs:.21,src:'STTF 2010–12',lo:500,hi:1600,dec:0,fmt:v=>v.toFixed(0),val:p=>p.sat},
+ gpa:{label:'HIGH SCHOOL GPA (WEIGHTED, CAPPED)',obs:.16,src:'STTF 2010–12',lo:2.3,hi:4.5,dec:2,fmt:v=>v.toFixed(2),val:p=>p.gpa}};
+const YSPEC={label:'FIRST-YEAR COLLEGE GPA',lo:0.9,hi:4.1,fmt:v=>v.toFixed(2)};
+const N=100000;
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd=mulberry(11092026);function gauss(){const u=Math.max(rnd(),1e-9),v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+const pts=[];{for(let i=0;i<N;i++){const u=(i+.5)/N;let gi=0,c=0;for(let k=0;k<GROUPS.length;k++){c+=GROUPS[k].share;if(u<c){gi=k;break}}
+ const G=GROUPS[gi];const z1=gauss(),z2=gauss();
+ const gpa=Math.round(Math.min(4.4,Math.max(2.0,G.gpa[0]+G.gpa[1]*z1))*100)/100;
+ const sat=Math.round(Math.min(1600,Math.max(500,G.sat[0]+G.sat[1]*(RXY_WITHIN*z1+Math.sqrt(1-RXY_WITHIN**2)*z2)))/10)*10;
+ pts.push({g:gi,gpa,sat,e:gauss(),a:gauss(),jx:0,jy:0})}}
+for(let i=N-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[pts[i],pts[j]]=[pts[j],pts[i]]}
+// the admissions composite (the regression's own weighting), as a standard score over the pool; and the holistic reading used for "who is shown"
+{const lin=pts.map(p=>B1*p.gpa+B2*p.sat);const m=lin.reduce((s,v)=>s+v,0)/N;const sd=Math.sqrt(lin.reduce((s,v)=>s+(v-m)**2,0)/N);
+ pts.forEach((p,i)=>{p.lin=lin[i];p.compz=(lin[i]-m)/sd;p.comp=Math.round((50+10*p.compz)*100)/100;p.read=.7*p.compz+.714*p.a})}
+// intercept: enrollee (top 60% on the reading) mean first-year GPA = 3.05
+let A0=0;{const sorted=pts.map(p=>p.read).sort((a,b)=>a-b);const cut=sorted[Math.floor(.4*(N-1))];const sel=pts.filter(p=>p.read>=cut);A0=3.05-sel.reduce((s,p)=>s+p.lin+GROUPS[p.g].resid,0)/sel.length;for(let it=0;it<4;it++){const mu=sel.reduce((s,p)=>s+Math.max(.5,4-Math.log(1+Math.exp(4*(4-(A0+p.lin+GROUPS[p.g].resid+NOISE0*p.e))))/4),0)/sel.length;A0+=3.05-mu}}
+const S={pred:'comp',noise:1,pop:1,color:true,trend:false,vis:[true,true,true,true],r:null};
+function outcome(p,k){return Math.round(Math.max(.5,4-Math.log(1+Math.exp(4*(4-(A0+p.lin+GROUPS[p.g].resid+NOISE0*k*p.e))))/4)*100)/100}
+function realize(){const P=PRED[S.pred];for(const p of pts){p.x=P.val(p);p.y=outcome(p,S.noise)}
+ const sorted=pts.map(p=>p.read).sort((a,b)=>a-b);const cut=sorted[Math.floor((1-S.pop)*(N-1))];for(const p of pts)p.inPop=p.read>=cut;
+ for(const p of pts){p.jx=0;p.jy=0}}
+// correlation of the chosen indicator with the outcome over ALL applicants, as a function of the noise multiplier
+function poolR(k){const P=PRED[S.pred];let sx=0,sy=0,sxx=0,syy=0,sxy=0;const xs=pts.map(p=>P.val(p)),ys=pts.map(p=>outcome(p,k));for(let i=0;i<N;i++){sx+=xs[i];sy+=ys[i]}const mx=sx/N,my=sy/N;for(let i=0;i<N;i++){sxx+=(xs[i]-mx)**2;syy+=(ys[i]-my)**2;sxy+=(xs[i]-mx)*(ys[i]-my)}return sxy/Math.sqrt(sxx*syy)}
+function noiseForR(target){let lo=0,hi=8;for(let i=0;i<40;i++){const mid=(lo+hi)/2;if(poolR(mid)>target)lo=mid;else hi=mid}return (lo+hi)/2}
+const R0={};for(const k in PRED){S.pred=k;R0[k]=poolR(1)}S.pred='comp';
+function visible(p){return S.vis[p.g]&&p.inPop}
+function stats(){const v=pts.filter(visible);const n=v.length;if(n<3)return null;let sx=0,sy=0;for(const p of v){sx+=p.x;sy+=p.y}const mx=sx/n,my=sy/n;let sxx=0,syy=0,sxy=0;for(const p of v){sxx+=(p.x-mx)**2;syy+=(p.y-my)**2;sxy+=(p.x-mx)*(p.y-my)}const r=sxy/Math.sqrt(sxx*syy||1e-9);const slope=sxy/(sxx||1e-9);
+ // top vs bottom quarter mean GPA
+ const xs=v.slice().sort((a,b)=>a.x-b.x);const q=Math.floor(n/4);const lo=xs.slice(0,q),hi=xs.slice(n-q);const m=a=>a.reduce((s,p)=>s+p.y,0)/(a.length||1);
+ return{n,r,r2:r*r,slope,icept:my-slope*mx,mx,my,loQ:m(lo),hiQ:m(hi),sdx:Math.sqrt(sxx/n),sdy:Math.sqrt(syy/n)}}
+
+// ---------- geometry (spin then tilt) ----------
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=cv.width,H=cv.height,SZ=500,ox=318,baseY=565,DOT=1.15,K=26,DEG=Math.PI/180;
+let sig=0,tau=0,GAP=2*DOT+1.4,stX,stV,maxStack=1,queue=[],last=performance.now();const RATE=95;
+let xLo,xHi,yLo,yHi;
+function A(x){return((x-(xLo+xHi)/2)/(xHi-xLo))*SZ}function B(v){return((v-(yLo+yHi)/2)/(yHi-yLo))*SZ}
+function T(a0,b0,G){const a1=G.k*(a0*G.c+b0*G.s),b1=G.k*(-a0*G.s+b0*G.c),h=b1+SZ/2;return{x:ox+a1,y:baseY-h*G.ct,a1,h}}
+function geom(){const c=Math.cos(sig*DEG),s=Math.sin(sig*DEG);return{c,s,k:1/(c+s),ct:Math.cos(tau*DEG),st:Math.sin(tau*DEG),pileByX:sig<45}}
+function mkStacks(getVal,depthKey,lo,hi){const members=[];pts.forEach((p,i)=>{if(visible(p))members.push(i)});const w=(hi-lo)/K,per=new Array(K).fill(0),out=new Array(N).fill(null);
+ // counting sort on (bin, group, quantized value) so piles stay banded by group without a comparison sort
+ const Q=400,B=4*Q,keys=new Int32Array(members.length),cntk=new Int32Array(K*B+1);
+ for(let m=0;m<members.length;m++){const p=pts[members[m]];const v=getVal(p);const j=Math.min(K-1,Math.max(0,Math.floor((v-lo)/w)));let q=Math.floor((v-lo)/(hi-lo)*(Q-1));q=Math.max(0,Math.min(Q-1,q));if(depthKey(p)<0)q=Q-1-q;keys[m]=j*B+p.g*Q+q;cntk[keys[m]+1]++}
+ for(let k=1;k<cntk.length;k++)cntk[k]+=cntk[k-1];const order=new Int32Array(members.length);for(let m=0;m<members.length;m++)order[cntk[keys[m]]++]=members[m];
+ for(let m=0;m<order.length;m++){const i=order[m];const j=Math.floor(keys[0]*0+Math.min(K-1,Math.max(0,Math.floor((getVal(pts[i])-lo)/w))));out[i]={center:lo+(j+.5)*w,stack:per[j]++}}
+ out.maxPer=Math.max(...per,1);return out}
+function rebuildStacks(){stX=mkStacks(p=>p.x,p=>1,xLo,xHi);stV=mkStacks(p=>p.y,p=>-1,yLo,yHi);maxStack=Math.max(stX.maxPer,stV.maxPer,1);GAP=Math.min(2*DOT+1.4,(SZ*.94)/maxStack)}
+function screenPos(i,G){const pe=G.pileByX?stX[i]:stV[i];if(!pe)return null;const p=pts[i];const hj=Math.min(xHi,Math.max(xLo,p.x+p.jx)),vj=Math.min(yHi,Math.max(yLo,p.y+p.jy));const a0=A(hj),b0=B(vj);const a1=G.k*(a0*G.c+b0*G.s),b1=G.k*(-a0*G.s+b0*G.c),h=b1+SZ/2;const aP=G.pileByX?A(pe.center):B(pe.center);return{X:ox+a1+(aP-a1)*G.st,Y:baseY-(h*G.ct+(pe.stack+.5)*G.st*GAP),dep:Math.max(0,Math.min(1,(h*G.ct*G.st)/(SZ*.5)))}}
+function niceTicks(lo,hi,n){const span=hi-lo,raw=span/n,mag=Math.pow(10,Math.floor(Math.log10(raw)));let step=mag;for(const m of[1,2,2.5,5,10]){if(raw<=m*mag){step=m*mag;break}}const t=[];for(let v=Math.ceil(lo/step)*step;v<=hi+1e-9;v+=step)t.push(+v.toFixed(6));return t}
+function txt(s,x,y,o={}){ctx.save();ctx.font=(o.w||600)+' '+(o.sz||11)+'px Montserrat,sans-serif';ctx.fillStyle=o.c||'#101D51';ctx.globalAlpha=o.a==null?1:o.a;ctx.textAlign=o.al||'center';ctx.textBaseline=o.bl||'middle';if(o.rot){ctx.translate(x,y);ctx.rotate(o.rot);ctx.fillText(s,0,0)}else ctx.fillText(s,x,y);ctx.restore()}
+
+function draw(){const G=geom();ctx.clearRect(0,0,W,H);const P=PRED[S.pred];const st=S.trend?stats():null;
+ // plate corners
+ const C=[[-SZ/2,-SZ/2],[SZ/2,-SZ/2],[SZ/2,SZ/2],[-SZ/2,SZ/2]].map(([a,b])=>T(a,b,G));
+ ctx.strokeStyle='#101D51';ctx.lineWidth=2.2;ctx.beginPath();C.forEach((c,i)=>i?ctx.lineTo(c.x,c.y):ctx.moveTo(c.x,c.y));ctx.closePath();ctx.stroke();
+ // gridlines (light)
+ ctx.strokeStyle='#e8e5da';ctx.lineWidth=1;
+ const xt=niceTicks(xLo,xHi,6),yt=niceTicks(yLo,yHi,6);
+ for(const v of xt){const p0=T(A(v),-SZ/2,G),p1=T(A(v),SZ/2,G);ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke()}
+ for(const v of yt){const p0=T(-SZ/2,B(v),G),p1=T(SZ/2,B(v),G);ctx.beginPath();ctx.moveTo(p0.x,p0.y);ctx.lineTo(p1.x,p1.y);ctx.stroke()}
+ // tick labels on all four edges; raised edges fade as the plate tilts, the baseline edge stays
+ function fade(h){return Math.max(0,1-Math.min(1,2*h/SZ)*G.st)}
+ const mot=Math.min(1,Math.max(sig/50,tau/50));function edgeLabels(ticks,toPlate,fmt,mirror){const hEdge=toPlate((ticks[0]+ticks[ticks.length-1])/2,0).h;const alpha=fade(hEdge)*(mirror?mot:1);if(alpha<.04)return;for(const v of ticks){const p=toPlate(v,0),q=toPlate(v,1);let dx=p.x-q.x,dy=p.y-q.y;let L=Math.hypot(dx,dy);if(L<1e-6){dx=0;dy=1;L=1}dx/=L;dy/=L;if(alpha<.04)continue;txt(fmt(v),p.x+dx*16,p.y+dy*16,{a:alpha,sz:10.5})}}
+ edgeLabels(xt,(v,inn)=>T(A(v),-SZ/2+inn*20,G),P.fmt,false);edgeLabels(xt,(v,inn)=>T(A(v),SZ/2-inn*20,G),P.fmt,true);
+ edgeLabels(yt,(v,inn)=>T(-SZ/2+inn*20,B(v),G),YSPEC.fmt,false);edgeLabels(yt,(v,inn)=>T(SZ/2-inn*20,B(v),G),YSPEC.fmt,true);
+ function title(mid,inn,label,mirror){let dx=mid.x-inn.x,dy=mid.y-inn.y;let L=Math.hypot(dx,dy);if(L<1e-6){dx=0;dy=1;L=1}dx/=L;dy/=L;const alpha=fade(mid.h)*(mirror?mot:1);if(alpha<.04)return;const horiz=Math.abs(dx)<.5;txt(label,mid.x+dx*(horiz?42:48),mid.y+dy*(horiz?42:48),{a:alpha,sz:10.5,w:800,rot:horiz?0:(dx<0?-Math.PI/2:Math.PI/2)})}
+ title(T(0,-SZ/2,G),T(0,-SZ/2+20,G),P.label,false);title(T(0,SZ/2,G),T(0,SZ/2-20,G),P.label,true);
+ title(T(-SZ/2,0,G),T(-SZ/2+20,0,G),YSPEC.label,false);title(T(SZ/2,0,G),T(SZ/2-20,0,G),YSPEC.label,true);
+ // trend line (fades with tilt)
+ if(S.trend&&st&&G.ct>.02){const seg=[[xLo,st.icept+st.slope*xLo],[xHi,st.icept+st.slope*xHi]].map(([x,y])=>T(A(x),B(Math.max(yLo,Math.min(yHi,y))),G));ctx.save();ctx.globalAlpha=G.ct;ctx.strokeStyle='#101D51';ctx.lineWidth=3;ctx.setLineDash([8,5]);ctx.beginPath();ctx.moveTo(seg[0].x,seg[0].y);ctx.lineTo(seg[1].x,seg[1].y);ctx.stroke();ctx.restore()}
+ // dots
+ for(let i=0;i<N;i++){const p=pts[i];if(!visible(p))continue;const sp=screenPos(i,G);if(!sp)continue;const col=S.color?GROUPS[p.g].col:'#101D51';ctx.fillStyle=col;ctx.globalAlpha=.28;const wd=DOT+G.st*(SZ/K*.36);ctx.fillRect(sp.X-wd,sp.Y-DOT,2*wd,2*DOT)}ctx.globalAlpha=1;
+ // count ruler when tilted
+ if(G.st>.05){const rx=ox-SZ/2*G.k*Math.SQRT2*0-SZ/2-30;const top=Math.min(maxStack*GAP+20,SZ*.98);ctx.save();ctx.globalAlpha=G.st;ctx.strokeStyle='#101D51';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(rx,baseY);ctx.lineTo(rx,baseY-top);ctx.stroke();for(const cn of niceTicks(0,top/GAP,5)){if(cn*GAP>top)continue;ctx.beginPath();ctx.moveTo(rx-6,baseY-cn*GAP);ctx.lineTo(rx,baseY-cn*GAP);ctx.stroke();txt(String(cn),rx-10,baseY-cn*GAP,{al:'right',sz:10.5})}txt('STUDENTS',rx-10,baseY-top-12,{al:'right',sz:10,w:800});ctx.restore()}
+ }
+function readouts(){updateTiles(stats())}
+
+function updateTiles(st){const P=PRED[S.pred];const el=document.getElementById('tiles');if(!st){el.innerHTML='';return}
+ const band=st.r2>=.25?'high, by the STTF rule of thumb':st.r2>=.10?'moderate, by the STTF rule of thumb':'low, by the STTF rule of thumb';
+ const tile=(k,n,d)=>`<div class="tile"><div class="k">${k}</div><div class="n">${n}</div><div class="d">${d}</div></div>`;
+ el.innerHTML=tile('Correlation',st.r.toFixed(2),`${st.n.toLocaleString()} students shown`)+tile('Share of grade variation it explains',Math.round(st.r2*100)+'%',band)+tile('Bottom quarter → top quarter',st.loQ.toFixed(2)+' → '+st.hiQ.toFixed(2),'mean first-year GPA by indicator quarter');}
+
+// ---------- animation ----------
+function tick(){const now=performance.now(),dt=(now-last)/1000;last=now;if(queue.length){const[key,tgt]=queue[0];const cur=key==='sig'?sig:tau;const next=cur+Math.sign(tgt-cur)*Math.min(RATE*dt,Math.abs(tgt-cur));const done=Math.abs(next-tgt)<.01;if(key==='sig')sig=done?tgt:next;else tau=done?tgt:next;if(done)queue.shift();syncMotion();draw()}requestAnimationFrame(tick)}
+function syncMotion(){
+ const v=tau<1?'joint':sig<45?'x':'y';document.querySelectorAll('#views button').forEach(b=>b.classList.toggle('on',b.dataset.v===v&&(tau<1||tau>89)))}
+function setView(v){queue=[];if(v==='joint'){queue.push(['tau',0]);if(sig>.5)queue.push(['sig',0])}else{const sT=v==='x'?0:90;if(Math.abs(sig-sT)>.5){if(tau>.5)queue.push(['tau',0]);queue.push(['sig',sT])}queue.push(['tau',90])}}
+document.querySelectorAll('#views button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+
+// ---------- controls ----------
+function setWindow(){const P=PRED[S.pred];xLo=P.lo;xHi=P.hi;yLo=YSPEC.lo;yHi=YSPEC.hi}
+function refresh(){realize();setWindow();rebuildStacks();readouts();draw()}
+document.getElementById('colorBtn').onclick=e=>{S.color=!S.color;e.target.classList.toggle('on',S.color);draw()};
+document.getElementById('trendBtn').onclick=e=>{S.trend=!S.trend;e.target.classList.toggle('on',S.trend);draw()};
+// key
+const key=document.getElementById('key');GROUPS.forEach((g,i)=>{const b=document.createElement('button');b.innerHTML=`<i style="background:${g.col}"></i>${g.name} <span style="font-weight:500;color:#5c6280">${Math.round(g.share*100)}%</span>`;b.title='Click to hide or show this group';b.onclick=()=>{S.vis[i]=!S.vis[i];b.classList.toggle('off',!S.vis[i]);rebuildStacks();readouts();draw()};key.appendChild(b)});
+const hint=document.createElement('span');hint.style.cssText='font-size:11.5px;color:#5c6280;font-weight:600;align-self:center';hint.textContent='click a group to hide or show it';key.appendChild(hint);
+refresh();syncMotion();requestAnimationFrame(tick);
+(function(){const keep={pred:S.pred,pop:S.pop,noise:S.noise,r:S.r};for(const k of ['gpa','sat','comp']){S.pred=k;S.noise=1;S.r=R0[k];S.pop=1;realize();const a=stats();S.pop=.6;realize();const b=stats();document.getElementById('t_'+k+'_r').textContent=a.r.toFixed(2);document.getElementById('t_'+k+'_r2').textContent=b.r2.toFixed(2)}Object.assign(S,keep);refresh()})();
+</script>
+</body></html>
