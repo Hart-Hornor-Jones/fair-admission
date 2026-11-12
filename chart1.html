@@ -78,7 +78,7 @@
 </header>
 <main>
  <div class="intro">
-  <p>Admissions offices rank applicants on indicators they can see in the fall of senior year: high school grades, a test score, or some blend. What they are trying to predict happens later. Here is a simulated pool of 100,000 applicants to a university like UC. Each dot is one student. Across: the indicator admissions offices have found most informative, high school GPA and SAT combined. Up: the grades that student would earn in the first year of college if admitted. The pool is built from what UC has published about its own applicants and students: the spread of grades and scores in each group, and how first-year grades follow from them.</p>
+  <p>Admissions offices rank applicants on indicators they can see in the fall of senior year: high school grades, a test score, or some blend. What they are trying to predict happens later. Here is a simulated pool of 30,000 applicants to a university like UC. Each dot is one student. Across: the indicator admissions offices have found most informative, high school GPA and SAT combined. Up: the grades that student would earn in the first year of college if admitted. The pool is built from what UC has published about its own applicants and students: the spread of grades and scores in each group, and how first-year grades follow from them.</p>
  </div>
  <div>
    <div class="views"><span id="views"><button data-v="joint" class="on">Joint distribution</button><button data-v="x">Distribution of the indicator</button><button data-v="y">Distribution of first-year grades</button></span><span class="sep"></span><button id="colorBtn" class="on">Color by group</button><button id="trendBtn">Trend line</button></div>
@@ -119,7 +119,7 @@ const PRED={
  sat:{label:'SAT, READING + MATH',obs:.21,src:'STTF 2010–12',lo:500,hi:1600,dec:0,fmt:v=>v.toFixed(0),val:p=>p.sat},
  gpa:{label:'HIGH SCHOOL GPA (WEIGHTED, CAPPED)',obs:.16,src:'STTF 2010–12',lo:2.3,hi:4.5,dec:2,fmt:v=>v.toFixed(2),val:p=>p.gpa}};
 const YSPEC={label:'FIRST-YEAR COLLEGE GPA',lo:0.9,hi:4.1,fmt:v=>v.toFixed(2)};
-const N=100000;
+const N=30000;
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const rnd=mulberry(11092026);function gauss(){const u=Math.max(rnd(),1e-9),v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
 const pts=[];{for(let i=0;i<N;i++){const u=(i+.5)/N;let gi=0,c=0;for(let k=0;k<GROUPS.length;k++){c+=GROUPS[k].share;if(u<c){gi=k;break}}
@@ -150,7 +150,7 @@ function stats(){const v=pts.filter(visible);const n=v.length;if(n<3)return null
 
 // ---------- geometry (spin then tilt) ----------
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
-const W=cv.width,H=cv.height,SZ=500,ox=318,baseY=565,DOT=1.15,K=26,DEG=Math.PI/180;
+const W=cv.width,H=cv.height,SZ=500,ox=318,baseY=565,DOT=1.5,K=26,DEG=Math.PI/180;
 let sig=0,tau=0,GAP=2*DOT+1.4,stX,stV,maxStack=1,queue=[],last=performance.now();const RATE=95;
 let xLo,xHi,yLo,yHi;
 function A(x){return((x-(xLo+xHi)/2)/(xHi-xLo))*SZ}function B(v){return((v-(yLo+yHi)/2)/(yHi-yLo))*SZ}
@@ -188,7 +188,7 @@ function draw(){const G=geom();ctx.clearRect(0,0,W,H);const P=PRED[S.pred];const
  // trend line (fades with tilt)
  if(S.trend&&st&&G.ct>.02){const seg=[[xLo,st.icept+st.slope*xLo],[xHi,st.icept+st.slope*xHi]].map(([x,y])=>T(A(x),B(Math.max(yLo,Math.min(yHi,y))),G));ctx.save();ctx.globalAlpha=G.ct;ctx.strokeStyle='#101D51';ctx.lineWidth=3;ctx.setLineDash([8,5]);ctx.beginPath();ctx.moveTo(seg[0].x,seg[0].y);ctx.lineTo(seg[1].x,seg[1].y);ctx.stroke();ctx.restore()}
  // dots
- for(let i=0;i<N;i++){const p=pts[i];if(!visible(p))continue;const sp=screenPos(i,G);if(!sp)continue;const col=S.color?GROUPS[p.g].col:'#101D51';ctx.fillStyle=col;ctx.globalAlpha=.28;const wd=DOT+G.st*(SZ/K*.36);ctx.fillRect(sp.X-wd,sp.Y-DOT,2*wd,2*DOT)}ctx.globalAlpha=1;
+ for(let i=0;i<N;i++){const p=pts[i];if(!visible(p))continue;const sp=screenPos(i,G);if(!sp)continue;const col=S.color?GROUPS[p.g].col:'#101D51';ctx.fillStyle=col;ctx.globalAlpha=.4;const wd=DOT+G.st*(SZ/K*.36);ctx.fillRect(sp.X-wd,sp.Y-DOT,2*wd,2*DOT)}ctx.globalAlpha=1;
  // count ruler when tilted
  if(G.st>.05){const rx=ox-SZ/2*G.k*Math.SQRT2*0-SZ/2-30;const top=Math.min(maxStack*GAP+20,SZ*.98);ctx.save();ctx.globalAlpha=G.st;ctx.strokeStyle='#101D51';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(rx,baseY);ctx.lineTo(rx,baseY-top);ctx.stroke();for(const cn of niceTicks(0,top/GAP,5)){if(cn*GAP>top)continue;ctx.beginPath();ctx.moveTo(rx-6,baseY-cn*GAP);ctx.lineTo(rx,baseY-cn*GAP);ctx.stroke();txt(String(cn),rx-10,baseY-cn*GAP,{al:'right',sz:10.5})}txt('STUDENTS',rx-10,baseY-top-12,{al:'right',sz:10,w:800});ctx.restore()}
  }

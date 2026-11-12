@@ -1,7 +1,7 @@
 # Fair to whom? — six ways to judge an admissions test
 
 An interactive explainer of the standard definitions of a "fair" admissions test, shown on a
-simulated pool of 100,000 applicants to a university like the University of California.
+simulated pool of 30,000 applicants to a university like the University of California.
 
 - **The page:** `index.html` — the narrative with all six charts embedded.
 - **The charts on their own:** `charts/chart1.html` … `charts/chart6.html`, each with its own
